@@ -1,0 +1,40 @@
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+import time
+import requests  # To download the image
+import os        # To save the image locally
+
+driver = webdriver.Chrome()
+driver.get('https://www.daraz.com.bd/routers/?page=1')
+driver.maximize_window()
+
+
+title_element = driver.find_element(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[1]/div[2]/div[1]/div/div/div[2]/div[2]/a')
+title = title_element.text
+link = title_element.get_attribute('href')
+
+
+img_element = driver.find_element(By.XPATH, '//*[@id="root"]/div/div[2]/div[1]/div/div[1]/div[2]/div[1]/div/div/div[1]/img')
+img_url = img_element.get_attribute('src')
+
+
+print("Title:", title)
+print("Link:", link)
+print("Image URL:", img_url)
+
+
+image_data = requests.get(img_url).content
+
+
+os.makedirs('images', exist_ok=True)
+
+
+filename = f"images/{title.replace('/', '_').replace(' ', '_')}.jpg"
+with open(filename, 'wb') as f:
+    f.write(image_data)
+
+print(f"Image saved as: {filename}")
+
+
+time.sleep(20)
+driver.quit()
